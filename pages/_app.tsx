@@ -42,7 +42,7 @@ const customChains: ChainSelectConfig<CustomChain> = {
   defaultChainId: ChainsID.Gnosis
 }
 
-const showAllNetworks = true;
+const showAllNetworks = process.env.NEXT_PUBLIC_SHOW_ALL_NETWORKS === 'true';
 
 const env = process.env.NEXT_PUBLIC_ENV ?? "development";
 const walletConnectKey = process.env.NEXT_PUBLIC_WALLET_CONNECT_KEY ?? "";
