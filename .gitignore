@@ -5,6 +5,8 @@ yalc.lock
 .npmrc
 .yarnrc
 
+.vscode
+
 .env
 
 # dependencies
@@ -41,3 +43,4 @@ yarn-error.log*
 
 # typescript
 *.tsbuildinfo
+.env.sentry-build-plugin

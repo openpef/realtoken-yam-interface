@@ -1,8 +1,8 @@
 import {
   ApolloClient,
-  createHttpLink,
   InMemoryCache,
-  NormalizedCacheObject
+  NormalizedCacheObject,
+  createHttpLink,
 } from '@apollo/client';
 import { setContext } from '@apollo/client/link/context';
 
@@ -18,40 +18,45 @@ export const getTheGraphUrlYAM = (chainId: number): string => {
       return '';
   }
 };
+// get the authentication token from local storage if it exists
+const token = process.env.NEXT_PUBLIC_API_KEY ?? undefined;
+console.log('token', token);
 
-// TODO: remove this
-export const getYamClient = (chainId: number): ApolloClient<NormalizedCacheObject> => {
-    return new ApolloClient({
-        uri: getTheGraphUrlYAM(chainId),
-        cache: new InMemoryCache(),
-    });
-}
-
+export const getYamClient = (
+  chainId: number
+): ApolloClient<NormalizedCacheObject> => {
+  return new ApolloClient({
+    uri: getTheGraphUrlYAM(chainId),
+    cache: new InMemoryCache(),
+    headers: {
+      ...(token ? { Authorization: `Bearer ${token}` } : {}),
+    },
+  });
+};
 
 export const apiUrl = process.env.NEXT_PUBLIC_API_URL ?? undefined;
-if(!apiUrl){
-  throw new Error('Missing "NEXT_PUBLIC_API_URL" var env')
+if (!apiUrl) {
+  throw new Error('Missing "NEXT_PUBLIC_API_URL" var env');
 }
 
 const link = createHttpLink({
-  uri: apiUrl
+  uri: apiUrl,
 });
 
 const authLink = setContext((_, { headers }) => {
-  // get the authentication token from local storage if it exists
-  const token = process.env.NEXT_PUBLIC_API_KEY;
-  console.log('token', token)
   // return the headers to the context so httpLink can read them
   return {
     headers: {
       ...headers,
-      authorization: token ? `Bearer ${token}` : "",
-    }
-  }
+      ...(token ? { Authorization: `Bearer ${token}` } : {}),
+    },
+  };
 });
 
 export const apiClient = new ApolloClient({
-  uri: apiUrl,
   cache: new InMemoryCache(),
-  link: authLink.concat(link)
+  link: authLink.concat(link),
+  headers: {
+    ...(token ? { Authorization: `Bearer ${token}` } : {}),
+  },
 });

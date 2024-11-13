@@ -1,6 +1,5 @@
 import { Combobox, useCombobox, ComboboxItem, InputBase, Flex, Text, Loader, Skeleton, Input } from '@mantine/core';
 import classes from "./ComboboxOfferToken.module.css";
-import { useRootStore } from '../../../../zustandStore/store';
 import { useEffect, useMemo, useState } from 'react';
 import BigNumber from 'bignumber.js';
 import { useTranslation } from 'react-i18next';
@@ -8,6 +7,7 @@ import { IconCheck } from '@tabler/icons';
 import { useWeb3React } from '@web3-react/core';
 import { Erc20, Erc20ABI } from '../../../../abis';
 import { getContract } from '@realtoken/realt-commons';
+import { useUserBalance } from '../../../../hooks/interface/useUserBalance';
 
 export type DataWithBalance = ComboboxItem & {
   balance: BigNumber;
@@ -18,7 +18,7 @@ const ComboboxOfferTokenOption = ({ item }: { item: DataWithBalance }) => {
 
   const { value, balance, label, selected } = item;
 
-  const [userBalancesAreLoading] = useRootStore((state) => [state.userBalancesAreLoading]);
+  const { userBalancesAreLoading } = useUserBalance();
 
   return(
       <Combobox.Option value={value}>
@@ -58,7 +58,8 @@ export const ComboboxOfferToken = ({
     placeholder,
     disabled,
     onChange,
-    type
+    type,
+    required
  } : {
     data: ComboboxItem[],
     label: string;
@@ -67,9 +68,8 @@ export const ComboboxOfferToken = ({
     disabled: boolean;
     onChange: any;
     type: 'realtoken' | 'others';
+    required?: boolean;
  }) => {
-
-  console.log('type: ', type)
 
   const { provider, account } = useWeb3React();
 
@@ -81,7 +81,10 @@ export const ComboboxOfferToken = ({
       onDropdownClose: () => combobox.resetSelectedOption(),
   });
 
-  const [realTokenUserBalances, realTokenUserBalancesAreLoading] = useRootStore((state) => [state.userBalances, state.userBalancesAreLoading]);
+  const {  
+    userBalances: realTokenUserBalances,
+    userBalancesAreLoading: realTokenUserBalancesAreLoading
+  } = useUserBalance();
 
   const [assetsBalances, setAssetsBalances] = useState<any>([]);
   const [assetsBalancesAreLoading, setAssetsBalancesAreLoading] = useState<boolean>(true);
@@ -118,6 +121,7 @@ export const ComboboxOfferToken = ({
     }
   }
   useEffect(() => {
+    console.log(type)
     if(type == 'others'){
       fetchBalances();
     }
@@ -136,9 +140,9 @@ export const ComboboxOfferToken = ({
     return {
       ...item,
       balance,
-      selected: item.value === value
+      selected: item.value.toLowerCase() === value?.toLowerCase()
     }
-  }), [userBalances, userBalancesAreLoading, data]);
+  }), [userBalances, userBalancesAreLoading, data, value]);
 
   const sortedDatas = useMemo(() => dataWithAmounts.sort((a, b) => {
     return b.balance.comparedTo(a.balance);
@@ -177,6 +181,7 @@ export const ComboboxOfferToken = ({
             onClick={() => combobox.openDropdown()}
             onFocus={() => combobox.openDropdown()}
             placeholder={placeholder}
+            required={required ?? false}
           >
             {selectedOption?.label || <Input.Placeholder>{placeholder}</Input.Placeholder>}
           </InputBase>

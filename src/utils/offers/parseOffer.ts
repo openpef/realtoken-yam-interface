@@ -94,9 +94,9 @@ export const parseOffer = (
           price: offer.price.price.toString(),
           amount:
             BigNumber.minimum(
-              offer.availableAmount, //5.4
-              balanceWallet, // 0
-              allowance //0
+              offer.availableAmount,
+              balanceWallet,
+              allowance
             ).toString(10) ?? '0',
           availableAmount: offer.availableAmount.toString(),
           balanceWallet: balanceWallet ?? '0',
@@ -288,15 +288,6 @@ const getPriceDelta = (prices: Price, offer: Offer): number | undefined => {
   }
   if (offer.type == OFFER_TYPE.BUY && officialPrice) {
     const tokenInDollar = 1 / parseFloat(offer.price.toString());
-    const ratio = officialPrice / tokenInDollar;
-
-    // if(offer.offerId == "135"){
-    //   console.log("offer price: ", offer.price.toString())
-    //   console.log("officialPrice: ", officialPrice)
-    //   console.log("tokenInDollar: ", tokenInDollar)
-    //   console.log("ratio: ", ratio)
-    // }
-
-    return 1 - ratio;
+    return (tokenInDollar - officialPrice) / officialPrice;
   }
 };

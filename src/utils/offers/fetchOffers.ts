@@ -92,7 +92,7 @@ export const fetchOffersTheGraph = (
   prices: Price,
   setTheGraphIssue: (value: boolean) => void
 ): Promise<Offer[]> => {
-  const { abortController } = useRootStore.getState();
+  // const { abortController } = useRootStore.getState();
   return new Promise<Offer[]>(async (resolve, reject) => {
     try {
 
@@ -110,24 +110,21 @@ export const fetchOffersTheGraph = (
             }
           }
         `,
-        context: {
-          fetchOptions: {
-            signal: abortController.signal
-          }
-        }
+        // context: {
+        //   fetchOptions: {
+        //     signal: abortController.signal
+        //   }
+        // }
       });
 
-      const offersToFetch =
-        activeOfferResult.data[graphNetworkPrefix].global.activeOffersCount;
+      const offersToFetch = activeOfferResult.data[graphNetworkPrefix].global.activeOffersCount;
       console.log('Amount of offersToFetch: ', offersToFetch);
-
-      const offersToFetchMax = graphNetworkPrefix == 'yamEth' ? offersToFetch : 10000;
 
       const offersRes = await apiClient.query({
         query: gql`
           query {
             ${graphNetworkPrefix} {
-              offers (first: ${offersToFetchMax}) {
+              offers (first: ${offersToFetch}, where: { removedAtBlock: null }) {
                 id
                 seller {
                     id
@@ -167,11 +164,11 @@ export const fetchOffersTheGraph = (
             }
           }
         `,
-         context: {
-          fetchOptions: {
-            signal: abortController.signal
-          }
-        }
+        //  context: {
+        //   fetchOptions: {
+        //     signal: abortController.signal
+        //   }
+        // }
       })
 
       const offers: OfferGraphQl[] = offersRes.data[graphNetworkPrefix].offers;

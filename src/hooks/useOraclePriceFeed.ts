@@ -1,25 +1,20 @@
 import BigNumber from "bignumber.js"
 import { useMemo } from "react"
 import { useRootStore } from "../zustandStore/store"
+import { usePrices } from "./interface/usePrices"
 
 type UseOraclePriceFeed = (
     tokenAddress: string|undefined
-) => {
-    price: BigNumber|undefined
-}
+) => BigNumber|undefined
 
 export const useOraclePriceFeed : UseOraclePriceFeed = (tokenAddress) => {
 
-    const prices = useRootStore((state) => state.prices);
+    const { prices } = usePrices();
 
-    const price: BigNumber|undefined = useMemo(() => {
-        if(!tokenAddress) return undefined
+    return useMemo(() => {
+        if(!tokenAddress || !prices) return undefined
         console.log("tokenAddress: ", tokenAddress);
         console.log(prices[tokenAddress.toLowerCase()]);
         return new BigNumber(prices[tokenAddress.toLowerCase()]);
     },[prices, tokenAddress])
-
-    return {
-        price
-    }
 }

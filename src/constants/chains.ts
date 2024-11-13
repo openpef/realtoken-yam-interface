@@ -14,7 +14,7 @@ import { Currency, DAI, ETH } from './currencies';
 export enum ChainsID {
   Ethereum = 0x01,
   Gnosis = 0x64,
-  Goerli = 0x05,
+  Sepolia = 0xaa36a7
 }
 
 export type Chain = Omit<RealtChains, 'blockExplorerUrl'> & {
@@ -76,27 +76,26 @@ export const CHAINS: Record<ChainsID, Chain> = {
     coingeckoNetworkId: 'eth'
   },
 
-  [ChainsID.Goerli]: {
-    chainId: ChainsID.Goerli,
-    chainName: 'Goerli',
+  [ChainsID.Sepolia]: {
+    chainId: ChainsID.Sepolia,
+    chainName: 'Sepolia',
     logo: EthereumLogo,
     nativeCurrency: ETH,
-    rpcUrl: 'https://goerli.gateway.tenderly.co',
-    blockExplorerUrl: 'https://goerli.etherscan.io/',
+    rpcUrl: 'https://ethereum-sepolia-rpc.publicnode.com',
+    blockExplorerUrl: 'https://sepolia.etherscan.io/',
     isTestnet: true,
     graphPrefixes: {
-      yam: 'yamGoerli',
-      realtoken: 'realTokenGoerli',
+      yam: 'yamSepolia',
+      realtoken: 'realTokenSepolia',
     },
     contracts: {
       [ContractsID.realTokenYamUpgradeable]: {
         abi: realTokenYamUpgradeableABI,
-        address: '0xba2e37248804eb636cf4e0b0aba50cf48ab49e2b',
-        //address: "0xBDAa060F27D00b9e135C005Ae5Ad0F51C8ba4FD9",
-        metadata: { fromBlock: 7385668 },
+        address: '0x1d27e09c95422629a88b865026bfb270eed7bc18',
+        metadata: { fromBlock: 5913460 },
       },
     },
-    coingeckoNetworkId: 'goerli-testnet'
+    coingeckoNetworkId: 'xdai'
   }
 };
 
@@ -111,5 +110,7 @@ export const URLS = Object.keys(CHAINS).reduce<Record<number, string>>(
 export const ALLOWED_CHAINS = Object.keys(URLS).map((chainId) =>
   Number(chainId)
 );
+
+export const ALLOWED_CHAINS_ID = Object.keys(CHAINS);
 
 export const ZERO_ADDRESS = '0x0000000000000000000000000000000000000000';

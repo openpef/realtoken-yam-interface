@@ -1,6 +1,5 @@
 import { Flex, Text, Anchor, Button, Loader, Select, Checkbox } from "@mantine/core";
 import { IconDownload } from "@tabler/icons";
-import { useRootStore } from "../../src/zustandStore/store"
 import { IconExclamationCircle } from "@tabler/icons";
 import { ColumnDef, ColumnFiltersState, PaginationState, getCoreRowModel, getFilteredRowModel, getPaginationRowModel, useReactTable } from "@tanstack/react-table";
 import { useMemo, useState } from "react";
@@ -16,24 +15,15 @@ import { Historic } from "../../src/types/historic";
 import { useTranslation } from "react-i18next";
 import { ConnectedProvider } from "../../src/providers/ConnectProvider";
 import { OfferTypeBadge } from "../../src/components/Offer/OfferTypeBadge/OfferTypeBadge";
+import { useHistoric } from "../../src/hooks/interface/useHistoric";
 
 export default function HistoricPage(){
 
-    const [
-        historics,
-        historicHasLoadingError,
-        historicsAreLoading,
-        chainId
-    ] = useRootStore((state) => [
-        state.historics,
-        state.historicHasLoadingError,
-        state.historicsAreLoading,
-        state.chainId
-    ]);
+    const { account, chainId } = useWeb3React();
+    const { historics, historicsAreLoading, isError } = useHistoric();
 
     const { t } = useTranslation('historic');
-    const { account } = useWeb3React();
-    const blockExplorerUrl = CHAINS[chainId as ChainsID].blockExplorerUrl;
+    const blockExplorerUrl = CHAINS[chainId as ChainsID]?.blockExplorerUrl;
 
     const [parseLocalDate, setParseLocalDate] = useState(false);
     const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([])
@@ -175,7 +165,7 @@ export default function HistoricPage(){
         meta: { colSpan: 16 }
     });
 
-    if(historicHasLoadingError){
+    if(isError){
         return(
             <Flex
                 h={'100%'}

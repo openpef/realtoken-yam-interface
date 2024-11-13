@@ -1,14 +1,20 @@
-import useInitStore from "src/hooks/useInitStore";
+import { useUserBalance } from "../hooks/interface/useUserBalance";
+import { usePrices } from "../hooks/interface/usePrices";
+import { useWlProperties } from "../hooks/interface/useWlProperties";
 
 interface InitStoreProps{
-    children: React.ReactElement
+    children: React.ReactElement | React.ReactElement[]
 }
 export default function InitStoreProvider({ children }: InitStoreProps){
 
-    // INIT REDUX STORE HERE
-    useInitStore();
+    // useProperties();
+    // useUserBalance();
+    // usePrices();
+    // useWlProperties();
 
-    return(
-        <>{children}</>
-    )
+    // Fetch offers
+    
+    // console.log('OFFERS: ', offers, offersAreLoading);
+
+    return (<>{children}</>)
 }
